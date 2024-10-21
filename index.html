@@ -7,6 +7,74 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    
+    <div class="container">
+      <header>
+        <h1>List Name</h1>
+        <p>Day, Month Year</p>
+      </header>
+      <nav>
+        <div class="navbar">
+          <button class="nav-icon plus-icon">
+            <img src="icons/plus-icon.svg" alt="Image of a plus icon"> REMOVE TEXT
+          </button>
+          <button class="nav-icon moon-icon">
+            <img src="icons/moon-icon.svg" alt="Image of a moon icon"> REMOVE TEXT
+          </button>
+          <button class="nav-icon ellipsis-icon">
+            <img src="icons/ellipsis-icon.svg" alt="Image of an open menu icon"> REMOVE TEXT
+          </button>
+        </div>
+        <div class="dropdown-menu">
+          <button class="edit-current-list">
+            <img src="icons/pencil-icon.svg" alt="Image of a pencil icon">
+            Edit current list
+          </button>
+          <button class="view-lists">
+            <img src="icons/search-icon.svg" alt="Image of a magnifying glass icon">
+            View lists
+          </button>
+        </div>
+      </nav>
+      <form class="add-task popup">
+        <h2>Add Task</h2>
+        <div class="title-of-task">
+          <label for="title">Title of Task</label>
+          <input type="text" id="title" name="title" placeholder="Enter title here" required>
+        </div>
+        <div class="time-of-task">
+          <label for="time">Time of Task</label>
+          <input type="text" id="time" name="time" placeholder="Enter time here" required>
+        </div>
+        <div class="form-buttons">
+          <input type="button" value="Cancel">
+          <input type="submit" value="Add">
+        </div>
+      </form>
+      <ol class="to-do-list">
+        <li class="task">
+          <button>
+            <img src="icons/check-mark-icon.svg" alt="Image of a check mark to mark task as complete">
+            REMOVE TEXT
+          </button>
+          <div class="task-info">
+            <h2>Task</h2>
+            <p>at time</p>
+          </div>
+          <div class="buttons">
+            <button>
+              <img src="icons/pencil-icon.svg" alt="Image of a pencil icon to edit task">
+              REMOVE TEXT
+            </button>
+            <button>
+              <img src="icons/x-icon.svg" alt="Image of an X icon to delete task">
+              REMOVE TEXT
+            </button>
+          </div>
+        </li>
+      </ol>
+      <footer>
+        <p>vdesimone</p>
+      </footer>
+    </div>
   </body>
 </html>
