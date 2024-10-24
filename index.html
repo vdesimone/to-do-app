@@ -58,24 +58,26 @@
         </nav>
       </div>
       <form class="add-task popup">
-        <h2>Add Task</h2>
-        <div class="title-of-task">
-          <label for="title">Title of Task</label>
-          <input type="text" id="title" name="title" placeholder="Enter title here" required>
-        </div>
-        <div class="time-of-task">
-          <label for="time">Time of Task</label>
-          <input type="text" id="time" name="time" placeholder="Enter time here" required>
-        </div>
-        <div class="form-buttons">
-          <input type="button" value="Cancel">
-          <input type="submit" value="Add">
+        <div class="add-task-container">
+          <h2>Add Task</h2>
+          <div class="title-of-task">
+            <label for="title">Title of Task</label>
+            <input type="text" id="title" name="title" placeholder="Enter title here" required>
+          </div>
+          <div class="time-of-task">
+            <label for="time">Time of Task</label>
+            <input type="text" id="time" name="time" placeholder="Enter time here" required>
+          </div>
+          <div class="form-buttons">
+            <input type="button" value="Cancel">
+            <input type="submit" value="Add">
+          </div>
         </div>
       </form>
       <ol class="to-do-list">
         <li class="task">
-          <button>
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <button class="check-mark-button">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="-1 0 26 20" fill="currentColor">
               <title>Check Icon</title>
               <desc>Button to check a task as complete</desc>
               <path d="M9.9997 15.1709L19.1921 5.97852L20.6063 7.39273L9.9997 17.9993L3.63574 11.6354L5.04996 10.2212L9.9997 15.1709Z"></path>
@@ -87,7 +89,7 @@
           </div>
           <div class="buttons">
             <button>
-              <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="-2.65 -2.65 29 29" fill="currentColor">
                 <title>Pencil Icon</title>
                 <desc>Button to edit current task</desc>
                 <path d="M15.7279 9.57627L14.3137 8.16206L5 17.4758V18.89H6.41421L15.7279 9.57627ZM17.1421 8.16206L18.5563 6.74785L17.1421 5.33363L15.7279 6.74785L17.1421 8.16206ZM7.24264 20.89H3V16.6473L16.435 3.21231C16.8256 2.82179 17.4587 2.82179 17.8492 3.21231L20.6777 6.04074C21.0682 6.43126 21.0682 7.06443 20.6777 7.45495L7.24264 20.89Z"></path>
@@ -105,7 +107,7 @@
       </ol>
     </div>
     <footer>
-      <p>vdesimone</p>
+      <p>vdesimone 2024</p>
     </footer>
   </body>
 </html>
