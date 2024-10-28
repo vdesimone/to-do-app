@@ -1,0 +1,49 @@
+[
+  {
+    "listNumber": "1",
+    "listTitle": "To-do List",
+    "listDate": "21, July 2024",
+    "listTasks": [
+      {
+        "taskTitle": "Clean the house",
+        "taskTime": "3pm"
+      },
+      {
+        "taskTitle": "Buy groceries",
+        "taskTime": "5pm"
+      }
+    ]
+  },
+  {
+    "listNumber": "2",
+    "listTitle": "To-do List",
+    "listDate": "21, July 2024",
+    "listTasks": [
+
+    ]
+  },
+  {
+    "listNumber": "3",
+    "listTitle": "To-do List",
+    "listDate": "21, July 2024",
+    "listTasks": [
+
+    ]
+  },
+  {
+    "listNumber": "4",
+    "listTitle": "To-do List",
+    "listDate": "21, July 2024",
+    "listTasks": [
+
+    ]
+  },
+  {
+    "listNumber": "5",
+    "listTitle": "To-do List",
+    "listDate": "21, July 2024",
+    "listTasks": [
+
+    ]
+  }
+]
