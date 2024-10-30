@@ -169,6 +169,15 @@ nav {
   background-color: var(--medium-grey);
   color: var(--dark-grey);
   font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.error-message {
+  display: none;
+  color: red;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
 }
 .title-of-task, .time-of-task {
   display: flex;
@@ -176,7 +185,7 @@ nav {
   margin-bottom: 1rem;
 }
 .time-of-task {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 .form-buttons {
   display: flex;
@@ -187,21 +196,32 @@ nav {
   font-weight: 600;
 }
 
+.to-do-list {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-height: 28.3055rem;
+  overflow-y: auto;
+}
 .task {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 4.4rem;
+  min-height: 4.4rem;
   background-color: var(--light-grey);
   padding-left: 1rem;
   padding-right: 1rem;
   border-radius: 0.25rem;
+  margin-bottom: 0.38rem;
 }
 .task button {
   height: 2.875rem;
   width: 2.875rem;
   border: none;
   background-color: var(--white);
+}
+.check-mark-div {
+  min-width: 3.875rem;
 }
 .check-mark-button {
   border-radius: 50%;
@@ -212,14 +232,18 @@ nav {
   flex-direction: column;
   gap: 0.1rem;
   flex-grow: 1;
+  word-break: break-all;
+  height: 100%;
 }
 .task-info h2 {
   font-size: 1.25rem;
+  margin-top: 0.925rem;
 }
 .task-info p {
   font-size: 0.875rem;
   color: var(--dark-grey);
   font-weight: 600;
+  margin-bottom: 0.925rem;
 }
 .buttons {
   display: flex;
