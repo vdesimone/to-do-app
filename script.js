@@ -10,6 +10,8 @@ addTaskButton.addEventListener("click", () => {
 const addTaskCancelButton = document.getElementById("add-task-cancel-btn");
 
 addTaskCancelButton.addEventListener("click", () => {
+  clearPreviousErrors();
+  addTaskPopup.reset();
   addTaskPopup.style.display = "none";
 });
 
