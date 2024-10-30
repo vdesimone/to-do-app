@@ -1,24 +1,72 @@
-const menuButton = document.querySelector(".ellipsis-icon");
-
-menuButton.addEventListener("click", () => {
-  const dropdownMenu = document.querySelector(".dropdown-menu");
-
-  if (dropdownMenu.style.display == "flex") {
-    dropdownMenu.style.display = "none";
-  } else {
-    dropdownMenu.style.display = "flex";
-  }
-});
-
-// create a new task, and locally save to the DOM
-
+// ADD TASK BUTTON
 const addTaskButton = document.querySelector(".plus-icon");
+const addTaskPopup = document.querySelector(".add-task");
 
 addTaskButton.addEventListener("click", () => {
-  createTask();
+  addTaskPopup.style.display = "flex";
 });
 
-function createTask() {
+// ADD TASK POPUP FORM SUBMIT
+addTaskPopup.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  clearPreviousErrors();
+  validateForm();
+});
+
+// ADD TASK CANCEL FORM
+const addTaskCancelButton = document.getElementById("add-task-cancel-btn");
+
+addTaskCancelButton.addEventListener("click", () => {
+  addTaskPopup.style.display = "none";
+});
+
+
+// FORM VALIDATION
+function validateForm() {
+  let isValid = true;
+
+  const title = document.getElementById("title").value.trim();
+  const maxLength = 48;
+  const titleError = document.getElementById("titleError");
+  if (title === "") {
+    titleError.textContent = "Please give your task a name";
+    titleError.style.display = "block";
+    isValid = false;
+  } else if (title.length > maxLength ) {
+    titleError.textContent = "Your task name cannot exceed 48 characters";
+    titleError.style.display = "block";
+    isValid = false;
+  }
+
+  const time = document.getElementById("time").value.trim();
+  const timePattern = /^(0?[1-9]|1[0-2])(:[0-5][0-9])? ?(am|AM|pm|PM)$/;
+  const timeError = document.getElementById("timeError");
+  if (time === "") {
+    timeError.textContent = "Please add a task start time";
+    timeError.style.display = "block";
+    isValid = false;
+  } else if (!timePattern.test(time)) {
+    timeError.textContent = "Add a time with am or pm after it";
+    timeError.style.display = "block";
+    isValid = false;
+  }
+
+  if (isValid) {
+    createTask(title, time);
+    addTaskPopup.style.display = "none";
+    addTaskPopup.reset();
+  }
+}
+
+function clearPreviousErrors() {
+  const errorMessages = document.querySelectorAll(".error-message");
+
+  errorMessages.forEach(msg => msg.style.display = "none");
+}
+
+// CREATE TASK
+function createTask(title, time) {
   const toDoList = document.querySelector(".to-do-list");
 
   // Create li
@@ -60,10 +108,10 @@ function createTask() {
   taskInfoDiv.classList.add("task-info");
 
   const taskInfoSubheading = document.createElement("h2");
-  taskInfoSubheading.textContent = "Task";
+  taskInfoSubheading.textContent = `${title}`;
 
   const taskInfoParagraph = document.createElement("p");
-  taskInfoParagraph.textContent = "at time";
+  taskInfoParagraph.textContent = `${time}`;
 
   listItem.appendChild(taskInfoDiv);
   taskInfoDiv.appendChild(taskInfoSubheading);
@@ -85,6 +133,7 @@ function createTask() {
   xIconButton.appendChild(xSVG);
 }
 
+// CREATE SVG
 function createSVG(title, desc, path, viewBox) {
   const svgNamespace = "http://www.w3.org/2000/svg";
 
