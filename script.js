@@ -6,7 +6,14 @@ addTaskButton.addEventListener("click", () => {
   addTaskPopup.style.display = "flex";
 });
 
-// ADD TASK POPUP FORM SUBMIT
+// ADD TASK POPUP CANCEL FORM
+const addTaskCancelButton = document.getElementById("add-task-cancel-btn");
+
+addTaskCancelButton.addEventListener("click", () => {
+  addTaskPopup.style.display = "none";
+});
+
+// ADD TASK POPUP SUBMIT FORM
 addTaskPopup.addEventListener("submit", function(event) {
   event.preventDefault();
 
@@ -14,20 +21,12 @@ addTaskPopup.addEventListener("submit", function(event) {
   validateForm();
 });
 
-// ADD TASK CANCEL FORM
-const addTaskCancelButton = document.getElementById("add-task-cancel-btn");
-
-addTaskCancelButton.addEventListener("click", () => {
-  addTaskPopup.style.display = "none";
-});
-
-
 // FORM VALIDATION
 function validateForm() {
   let isValid = true;
 
   const title = document.getElementById("title").value.trim();
-  const maxLength = 48;
+  const maxLength = 47;
   const titleError = document.getElementById("titleError");
   if (title === "") {
     titleError.textContent = "Please give your task a name";
@@ -97,9 +96,14 @@ function createTask(title, time) {
   // HTML Structure
   toDoList.appendChild(listItem);
 
+  // check-mark-div
+  const checkMarkDiv = document.createElement("div");
+  listItem.appendChild(checkMarkDiv);
+  checkMarkDiv.classList.add("check-mark-div");
+
   // check-mark-button
   const checkMarkButton = document.createElement("button");
-  listItem.appendChild(checkMarkButton);
+  checkMarkDiv.appendChild(checkMarkButton);
   checkMarkButton.classList.add("check-mark-button");
   checkMarkButton.appendChild(checkSVG);
 
