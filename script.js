@@ -44,7 +44,7 @@ function validateForm() {
   const timePattern = /^(0?[1-9]|1[0-2])(:[0-5][0-9])? ?(am|AM|pm|PM)$/;
   const timeError = document.getElementById("timeError");
   if (time === "") {
-    timeError.textContent = "Please add a task start time";
+    timeError.textContent = "Please add a start time for your task";
     timeError.style.display = "block";
     isValid = false;
   } else if (!timePattern.test(time)) {
@@ -117,7 +117,7 @@ function createTask(title, time) {
   taskInfoSubheading.textContent = `${title}`;
 
   const taskInfoParagraph = document.createElement("p");
-  taskInfoParagraph.textContent = `${time}`;
+  taskInfoParagraph.textContent = `at ${time}`;
 
   listItem.appendChild(taskInfoDiv);
   taskInfoDiv.appendChild(taskInfoSubheading);
@@ -164,3 +164,16 @@ function createSVG(title, desc, path, viewBox) {
 
   return svg;
 }
+
+// MENU BUTTON
+const menuButton = document.querySelector(".ellipsis-icon");
+
+menuButton.addEventListener("click", () => {
+  const dropdownMenu = document.querySelector(".dropdown-menu");
+
+  if (dropdownMenu.style.display == "flex") {
+    dropdownMenu.style.display = "none";
+  } else {
+    dropdownMenu.style.display = "flex";
+  }
+});
