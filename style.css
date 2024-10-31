@@ -143,7 +143,7 @@ nav {
 }
 
 /* FORM */
-.add-task {
+.add-task, .edit-list {
   position: absolute;
   top: 0;
   left: 0;
@@ -155,14 +155,14 @@ nav {
   align-items: center;
   justify-content: center;
 }
-.add-task-container {
+.add-task-container, .edit-list-container {
   background-color: var(--light-grey);
   padding: 2rem;
   width: 80%;
   border-radius: 0.25rem;
   box-shadow: 0px 7px 7.8px rgba(0, 0, 0, 0.25);
 }
-.add-task-container h2 {
+.add-task-container h2, .edit-list-container h2 {
   font-size: 1.5rem;
   text-align: center;
   margin-bottom: 1rem;
@@ -170,7 +170,7 @@ nav {
   justify-content: center;
   cursor: default;
 }
-.add-task-container label {
+.add-task-container label, .edit-list-container label {
   margin-bottom: 0.5rem;
   font-weight: 600;
 }
@@ -178,7 +178,7 @@ form label {
   max-width: fit-content;
   cursor: pointer;
 }
-.add-task-container input {
+.add-task-container input, .edit-list-container input {
   height: 2rem;
   padding-left: 0.6rem;
   padding-right: 0.6rem;
@@ -190,7 +190,7 @@ form label {
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
-.add-task-input:focus-visible {
+.add-task-input:focus-visible, .edit-list-input:focus-visible {
   border: 2px solid var(--very-dark-grey);
   outline: none;
   caret-color: var(--dark-grey);
@@ -202,13 +202,14 @@ form label {
   font-weight: 500;
   padding-left: 0.6rem;
   padding-right: 0.6rem;
+  cursor: default;
 }
-.title-of-task, .time-of-task {
+.title-of-task, .time-of-task, .title-of-list, .date-of-list {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
 }
-.time-of-task {
+.time-of-task, .date-of-list {
   margin-bottom: 1.5rem;
 }
 .form-buttons {

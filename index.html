@@ -62,8 +62,8 @@
           <h2>Add Task</h2>
           <div class="title-of-task">
             <label for="title">Title of Task</label>
-            <input class="add-task-input" type="text" id="title" name="title" placeholder="Enter title here" required>
-            <p class="error-message" id="titleError">Error Message</p>
+            <input class="add-task-input" type="text" id="addTaskTitle" name="addTaskTitle" placeholder="Enter title here" required>
+            <p class="error-message" id="addTaskTitleError">Error Message</p>
           </div>
           <div class="time-of-task">
             <label for="time">Time of Task</label>
@@ -73,6 +73,25 @@
           <div class="form-buttons">
             <input id="add-task-cancel-btn" type="button" value="Cancel">
             <input type="submit" value="Add">
+          </div>
+        </div>
+      </form>
+      <form class="edit-list popup" novalidate>
+        <div class="edit-list-container">
+          <h2>Edit List</h2>
+          <div class="title-of-list">
+            <label for="title">Title of List</label>
+            <input class="edit-list-input" type="text" id="editListTitle" name="editListTitle" placeholder="Enter title here" required>
+            <p class="error-message" id="editListTitleError">Error Message</p>
+          </div>
+          <div class="date-of-list">
+            <label for="date">Date of List</label>
+            <input class="edit-list-input" type="text" id="date" name="date" placeholder="Enter date here" required>
+            <p class="error-message" id="dateError">Error Message</p>
+          </div>
+          <div class="form-buttons">
+            <input id="edit-list-cancel-btn" type="button" value="Cancel">
+            <input type="submit" value="Save">
           </div>
         </div>
       </form>

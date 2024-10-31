@@ -20,16 +20,16 @@ addTaskPopup.addEventListener("submit", function(event) {
   event.preventDefault();
 
   clearPreviousErrors();
-  validateForm();
+  validateAddTaskForm();
 });
 
-// FORM VALIDATION
-function validateForm() {
+// ADD TASK FORM VALIDATION
+function validateAddTaskForm() {
   let isValid = true;
 
-  const title = document.getElementById("title").value.trim();
+  const title = document.getElementById("addTaskTitle").value.trim();
   const maxLength = 47;
-  const titleError = document.getElementById("titleError");
+  const titleError = document.getElementById("addTaskTitleError");
   if (title === "") {
     titleError.textContent = "Please give your task a name";
     titleError.style.display = "block";
@@ -177,3 +177,74 @@ menuButton.addEventListener("click", () => {
     dropdownMenu.style.display = "flex";
   }
 });
+
+// EDIT CURRENT LIST BUTTON
+const editCurrentListButton = document.querySelector(".edit-current-list");
+const editCurrentListPopup = document.querySelector(".edit-list");
+
+editCurrentListButton.addEventListener("click", () => {
+  editCurrentListPopup.style.display = "flex";
+});
+
+// EDIT CURRENT LIST POPUP CANCEL FORM
+const editListCancelButton = document.getElementById("edit-list-cancel-btn");
+
+editListCancelButton.addEventListener("click", () => {
+  clearPreviousErrors();
+  editCurrentListPopup.reset();
+  editCurrentListPopup.style.display = "none";
+});
+
+// EDIT CURRENT LIST POPUP SUBMIT FORM
+editCurrentListPopup.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  clearPreviousErrors();
+  validateEditCurrentListForm();
+});
+
+// EDIT CURRENT LIST FORM VALIDATION
+function validateEditCurrentListForm() {
+  let isValid = true;
+
+  const title = document.getElementById("editListTitle").value.trim();
+  const maxLength = 20;
+  const titleError = document.getElementById("editListTitleError");
+  if (title === "") {
+    titleError.textContent = "Please give your list a name";
+    titleError.style.display = "block";
+    isValid = false;
+  } else if (title.length > maxLength ) {
+    titleError.textContent = "Your list name cannot exceed 20 characters";
+    titleError.style.display = "block";
+    isValid = false;
+  }
+
+  const date = document.getElementById("date").value.trim();
+  const datePattern = /^((0?[1-9]|1[0-2])\/(0?[1-9]|[12][0-9]|3[01])\/(\d{2}|\d{4})|([A-Za-z]+) (0?[1-9]|[12][0-9]|3[01]), (\d{4}))$/;
+  const dateError = document.getElementById("dateError");
+  if (date === "") {
+    dateError.textContent = "Please give your list a date";
+    dateError.style.display = "block";
+    isValid = false;
+  } else if (!datePattern.test(date)) {
+    dateError.textContent = "Add a valid date in the format of 1/1/24 or January 1, 2024";
+    dateError.style.display = "block";
+    isValid = false;
+  }
+
+  if (isValid) {
+    editList(title, date);
+    editCurrentListPopup.style.display = "none";
+    editCurrentListPopup.reset();
+  }
+}
+
+// EDIT LIST
+function editList(title, date) {
+  const listTitle = document.querySelector("header h1");
+  listTitle.textContent = `${title}`;
+
+  const listDate = document.querySelector("header p");
+  listDate.textContent = `${date}`;
+}
