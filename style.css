@@ -134,7 +134,7 @@ nav {
   height: 1.5rem;
   margin-right: 0.25rem;
 }
-.dropdown-menu button, .view-lists button {
+.dropdown-menu button, .view-lists-btn button {
   border: none;
   background-color: transparent;
   border-radius: 0.25rem;
@@ -231,26 +231,26 @@ form label {
   font-weight: 600;
 }
 
-/* TO-DO LIST */
-.to-do-list {
+/* TO-DO LIST & VIEW LIST*/
+.to-do-list, .view-lists {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   max-height: 28.3055rem;
   overflow-y: auto;
 }
-.task {
+.task, .list {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 4.4rem;
+  min-height: 4.5rem;
   background-color: var(--light-grey);
   padding-left: 1rem;
   padding-right: 1rem;
   border-radius: 0.25rem;
   margin-bottom: 0.38rem;
 }
-.task button {
+.task button, .list button {
   height: 2.875rem;
   width: 2.875rem;
   border: none;
@@ -274,6 +274,9 @@ form label {
 .task-info h2 {
   font-size: 1.25rem;
   margin-top: 0.925rem;
+}
+.list h2 {
+  font-size: 1.5rem;
 }
 .task-info p {
   font-size: 0.875rem;

@@ -68,7 +68,8 @@ function clearPreviousErrors() {
 
 // CREATE TASK
 function createTask(title, time) {
-  const toDoList = document.querySelector(".to-do-list");
+  const toDoList = document.querySelector("ol");
+  toDoList.classList.add("to-do-list");
 
   // Create li
   const listItem = document.createElement("li");
@@ -247,4 +248,82 @@ function editList(title, date) {
 
   const listDate = document.querySelector("header p");
   listDate.textContent = `${date}`;
+}
+
+// VIEW LISTS
+const viewListsButton = document.querySelector(".view-lists-btn");
+viewListsButton.addEventListener("click", () => {
+  displayViewLists();
+});
+
+function displayViewLists() {
+  // Change heading
+  const headerHeading = document.querySelector("header h1");
+  headerHeading.textContent = "View Lists";
+
+  // Change paragraph text
+  const headerParagraph = document.querySelector("header p");
+  headerParagraph.textContent = `4/5 Lists Created`;
+
+  displayLists();
+}
+
+function displayLists() {
+  const orderedList = document.querySelector("ol");
+  const task = document.querySelector(".task");
+
+  orderedList.removeChild(task);
+
+  createList();
+}
+
+function createList() {
+  const orderedList = document.querySelector("ol");
+  orderedList.classList.replace("to-do-list", "view-lists");
+
+  // SVGs
+  const openListSVG = createSVG(
+    "Open List Icon",
+    "Button to open current list",
+    "M10 6V8H5V19H16V14H18V20C18 20.5523 17.5523 21 17 21H4C3.44772 21 3 20.5523 3 20V7C3 6.44772 3.44772 6 4 6H10ZM21 3V11H19L18.9999 6.413L11.2071 14.2071L9.79289 12.7929L17.5849 5H13V3H21Z",
+    "-2.75 -2.75 30 30"
+  );
+  const xSVG = createSVG(
+    "X Icon",
+    "Button to delete current task",
+    "M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z",
+    "0 0 24 24"
+  );
+
+  // Create list item
+  const listItem = document.createElement("li");
+  listItem.classList.add("list");
+
+  // HTML Structure
+  orderedList.appendChild(listItem);
+
+  // h2 and span tag
+  const listName = document.createElement("h2");
+  listItem.appendChild(listName);
+
+  const spanTag = document.createElement("span");
+  spanTag.textContent = "#. "
+  listName.appendChild(spanTag);
+
+  listName.appendChild(document.createTextNode(" List Name"));
+
+  // buttons
+  const buttonsDiv = document.createElement("div");
+  buttonsDiv.classList.add("buttons");
+
+  listItem.appendChild(buttonsDiv);
+
+  const openListIconButton = document.createElement("button");
+  const xIconButton = document.createElement("button");
+
+  buttonsDiv.appendChild(openListIconButton);
+  openListIconButton.appendChild(openListSVG);
+
+  buttonsDiv.appendChild(xIconButton);
+  xIconButton.appendChild(xSVG);
 }
