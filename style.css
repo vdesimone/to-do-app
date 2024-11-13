@@ -16,9 +16,9 @@
   --dark-mode-very-light-grey: #888888;
   --dark-mode-light-grey: #3A3A3A;
   --dark-mode-medium-grey: #5D5D5D;
-  --dark-mode-dark-grey: #252525;
+  --dark-mode-dark-grey: #292929;
   --dark-mode-very-dark-grey: #181818;
-  --dark-mode-hover-grey: #D0D0D0;
+  --dark-mode-hover-grey: #393939;
 }
 * {
   margin: 0;
@@ -69,6 +69,7 @@ header h1 {
   text-wrap: wrap;
   overflow-wrap: break-word;
   margin-bottom: 0.25rem;
+  color: var(--black);
 }
 header p {
   font-size: 1.25rem;
@@ -169,10 +170,12 @@ nav {
   display: flex;
   justify-content: center;
   cursor: default;
+  color: var(--black);
 }
 .popup-container label {
   margin-bottom: 0.5rem;
   font-weight: 600;
+  color: var(--black);
 }
 form label {
   max-width: fit-content;
@@ -264,7 +267,7 @@ form label {
 .check-mark-div {
   min-width: 3.875rem;
 }
-.check-mark-button {
+.check-mark-btn {
   border-radius: 50%;
   margin-right: 1rem;
 }
@@ -279,9 +282,11 @@ form label {
 .task-info h2 {
   font-size: 1.25rem;
   margin-top: 0.925rem;
+  color: var(--black);
 }
 .list h2 {
   font-size: 1.5rem;
+  color: var(--black);
 }
 .task-info p {
   font-size: 0.875rem;
@@ -308,4 +313,21 @@ footer p {
   color: #BABABA;
   font-weight: bold;
   font-size: 0.875rem;
+}
+
+.dark-mode {
+  /* container */
+  --white: var(--dark-mode-very-dark-grey);
+
+  /* nav buttons and task container */
+  --light-grey: var(--dark-mode-dark-grey);
+
+  /* hover color */
+  --hover-grey: var(--dark-mode-hover-grey);
+
+  /* list title/task title */
+  --black: var(--dark-mode-white);
+
+  /* list date/task time */
+  --dark-grey: var(--dark-mode-very-light-grey);
 }
