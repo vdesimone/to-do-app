@@ -1,15 +1,87 @@
 window.App = {
   listManagement: {
-    saveData: function(lists) {
-      localStorage.setItem("lists", JSON.stringify(lists));
+    saveData: function(lists, activeListName) {
+      try {
+        console.log("Saving data: ", lists); // Debug log to check data
+        localStorage.setItem("lists", JSON.stringify(lists)); // Save the list to local storage
+
+        // Save the listId of the last viewed list based on its listName
+        const activeList = lists.find(list => list.listName === activeListName);
+        if (activeList) {
+          const lastListId = activeList.listId;
+          localStorage.setItem("lastViewedListId", lastListId);
+          localStorage.setItem("lastViewedListName", activeListName);
+          console.log("Last viewed list id saved:", lastListId);
+        }
+        else {
+          console.error("Active list not found in the lists array.");
+        }
+      }
+      catch (error) {
+        console.error("Error saving to localStorage:", error);
+      }
     },
 
     loadData: function() {
+      console.log("Loading data...");
       const savedData = localStorage.getItem("lists");
-      return savedData ? JSON.parse(savedData) : [];
+      console.log("Saved Data:", savedData);
+
+      const lastViewedListId = localStorage.getItem("lastViewedListId");
+      const lastViewedListName = localStorage.getItem("lastViewedListName");
+      console.log("Last viewed list id: ", lastViewedListId);
+      console.log("Last viewed list name: ", lastViewedListName);
+
+      // If saved data exists, parse and return it
+      if (savedData) {
+        const lists = JSON.parse(savedData);
+
+        if (lastViewedListId) {
+          const lastList = lists.find(list => list.listId === parseInt(lastViewedListId));
+          if (lastList) {
+            console.log("Found last viewed list:", lastList);
+            return lists;
+          }
+        }
+
+        if (lastViewedListName) {
+          const lastListByName = lists.find(list => list.listName === lastViewedListName);
+          if (lastListByName) {
+            console.log("Found last viewed list by name:", lastListByName);
+            return lists;
+          }
+        }
+
+        // Fallback if no last viewed list is found
+        return lists;
+      }
+      else {
+        console.log("No saved data found. Returning default list.");
+        return this.getDefaultList();
+      }
     },
 
-    addList(listName, listDate) {
+    getDefaultList: function() {
+      const defaultList = {
+        listId: Date.now(),
+        listName: "Sample List",
+        listDate: "January 1, 2025",
+        tasks: [
+          {
+            taskId: Date.now() + 1,
+            taskName: "Sample Task",
+            taskTime: "9:00 am",
+            completed: false
+          }
+        ]
+      };
+      const lists = [defaultList];
+      this.saveData(lists, defaultList.listName); // Save the default list
+      console.log("Default List Saved:", lists); // Debugging line
+      return lists;
+    },
+
+    addList: function(listName, listDate) {
       const lists = this.loadData();
 
       if (lists.length >= 5) {
@@ -24,7 +96,7 @@ window.App = {
       };
 
       lists.push(newList);
-      this.saveData(lists);
+      this.saveData(lists, listName);
     },
 
     validateAddListForm: function() {
@@ -62,45 +134,89 @@ window.App = {
 
       const addListPopup = document.querySelector(".add-list-form");
       if (isValid) {
-        this.createList(title, date);
+        App.listManagement.addList(title, date);
         addListPopup.style.display = "none";
         addListPopup.reset();
       }
     },
 
-    openList: function() {
-      console.log("clicked the open list btn");
+    openList: function(listId) {
+      const lists = this.loadData();
+      const list = lists.find(l => l.listId === listId);
+
+      if (list) {
+        // Update the page to show tasks for this list
+        document.querySelector("header h1").textContent = list.listName;
+        document.querySelector("header p").textContent = list.listDate;
+
+        // Clear existing tasks
+        App.utils.clearTasks();
+
+        // Render the tasks for this list
+        list.tasks.forEach(task => {
+          App.toDoApp.createTask(task);
+        });
+      }
     },
 
-    deleteList: function() {
-      console.log("clicked the delete list btn");
+    deleteList: function(listId) {
+      const lists = this.loadData();
+      const updatedLists = lists.filter(list => list.listId !== listId);
+      this.saveData(updatedLists, updatedLists.listName);
+      this.renderListsPage();
     },
 
     handleEvents: function() {
       // open list button
       const openListButtons = document.querySelectorAll(".open-list-btn");
       openListButtons.forEach(button => {
-        button.addEventListener("click", () => {
-          this.openList();
+        button.addEventListener("click", (e) => {
+          const listId = parseInt(e.target.dataset.listId);
+          this.openList(listId);
         });
       });
 
       // delete list button
       const deleteListButtons = document.querySelectorAll(".delete-list-btn");
       deleteListButtons.forEach(button => {
-        button.addEventListener("click", () => {
-          this.deleteList();
+        button.addEventListener("click", (e) => {
+          const listId = parseInt(e.target.closest(".list").querySelector(".open-list-btn").dataset.listId);
+          this.deleteList(listId);
         });
       });
 
     },
 
-    renderList: function() {
-      App.utils.clearTasks();
-      this.createList();
+    renderListsPage: function() {
+      // update header
+      const lists = this.loadData();
+      document.querySelector("header h1").textContent = "View Lists";
+      document.querySelector("header p").textContent = `${lists.length}/5 Lists Created`;
+
+      // switch to add-list-btn
+      const addTaskButton = document.querySelector(".add-task-btn");
+      addTaskButton.classList.replace("add-task-btn", "add-list-btn");
+
+      // remove menu btn and dropdown
+      const navBar = document.querySelector(".navbar");
+      const menuButton = document.querySelector(".ellipsis-icon");
+      navBar.removeChild(menuButton);
+
+      const dropdownMenu = document.querySelector(".dropdown-menu");
+      dropdownMenu.style.display = "none";
+
+      this.renderList(lists);
     },
 
-    createList: function() {
+    renderLists: function(lists) {
+      App.utils.clearLists();
+
+      lists.forEach(list => {
+        this.createList(list);
+      });
+    },
+
+    createList: function(list) {
       const orderedList = document.querySelector("ol");
       orderedList.classList.replace("to-do-list", "view-lists");
 
@@ -122,58 +238,34 @@ window.App = {
       const listItem = document.createElement("li");
       listItem.classList.add("list");
 
-      // HTML Structure
+      // HTML Structure for the list
       orderedList.appendChild(listItem);
 
-      // h2 and span tag
+      // h2 and span tag for list name
       const listName = document.createElement("h2");
       listItem.appendChild(listName);
-
       const spanTag = document.createElement("span");
       spanTag.textContent = "#. "
       listName.appendChild(spanTag);
-
-      listName.appendChild(document.createTextNode(" List Name"));
+      listName.appendChild(document.createTextNode(list.listName));
 
       // buttons
       const buttonsDiv = document.createElement("div");
       buttonsDiv.classList.add("buttons");
-
       listItem.appendChild(buttonsDiv);
 
       // open list button
       const openListButton = document.createElement("button");
       openListButton.classList.add("open-list-btn");
-
+      openListButton.dataset.listId = list.listId;
       buttonsDiv.appendChild(openListButton);
       openListButton.appendChild(openListSVG);
 
       // delete list button
       const deleteListButton = document.createElement("button");
       deleteListButton.classList.add("delete-list-btn");
-
       buttonsDiv.appendChild(deleteListButton);
       deleteListButton.appendChild(deleteListSVG);
-    },
-
-    renderListsPage: function() {
-    // update header
-    document.querySelector("header h1").textContent = "View Lists";
-    document.querySelector("header p").textContent = `4/5 Lists Created`;
-
-    // switch to add-list-btn
-    const addTaskButton = document.querySelector(".add-task-btn");
-    addTaskButton.classList.replace("add-task-btn", "add-list-btn");
-
-    // remove menu btn and dropdown
-    const navBar = document.querySelector(".navbar");
-    const menuButton = document.querySelector(".ellipsis-icon");
-    navBar.removeChild(menuButton);
-
-    const dropdownMenu = document.querySelector(".dropdown-menu");
-    dropdownMenu.style.display = "none";
-
-    this.renderList();
     }
   },
   toDoApp: {
@@ -190,9 +282,9 @@ window.App = {
           completed: false
         };
 
-        lists.tasks.push(newTask);
-        App.listManagement.saveData(lists);
-        this.createTask(title, time);
+        list.tasks.push(newTask);
+        App.listManagement.saveData(lists, taskName);
+        this.createTask(newTask);
       }
 
     },
@@ -201,14 +293,16 @@ window.App = {
       let isValid = true;
 
       const title = document.getElementById("addTaskTitle").value.trim();
-      const maxLength = 47;
       const titleError = document.getElementById("addTaskTitleError");
+      const maxLength = 47;
+
       if (title === "") {
         titleError.textContent = "Please give your task a name";
         titleError.style.display = "block";
         isValid = false;
-      } else if (title.length > maxLength ) {
-        titleError.textContent = "Your task name cannot exceed 48 characters";
+      }
+      else if (title.length > maxLength ) {
+        titleError.textContent = "Your task name cannot exceed 47 characters";
         titleError.style.display = "block";
         isValid = false;
       }
@@ -216,34 +310,45 @@ window.App = {
       const time = document.getElementById("time").value.trim();
       const timePattern = /^(0?[1-9]|1[0-2])(:[0-5][0-9])? ?(am|AM|pm|PM)$/;
       const timeError = document.getElementById("timeError");
+
       if (time === "") {
         timeError.textContent = "Please add a start time for your task";
         timeError.style.display = "block";
         isValid = false;
-      } else if (!timePattern.test(time)) {
+      }
+      else if (!timePattern.test(time)) {
         timeError.textContent = "Add a time with am or pm after it";
         timeError.style.display = "block";
         isValid = false;
       }
 
       const addTaskPopup = document.querySelector(".add-task-form");
-
       if (isValid) {
-        this.createTask(title, time);
-        addTaskPopup.style.display = "none";
-        addTaskPopup.reset();
+        const savedData = localStorage.getItem("lists");
+        if (savedData) {
+          const lists = JSON.parse(savedData);
+          const lastViewedListId = localStorage.getItem("lastViewedListId");
+          if (lastViewedListId) {
+            const currentListId = lists.find(list => list.listId === parseInt(lastViewedListId));
+            if (currentListId) {
+              App.toDoApp.addTask(currentListId, title, time);
+              addTaskPopup.style.display = "none";
+              addTaskPopup.reset();
+            }
+          }
+        }
       }
     },
 
-    createTask: function(title, time) {
+    createTask: function(task) {
       const toDoList = document.querySelector("ol");
       toDoList.classList.add("to-do-list");
 
-      // Create li
+      // Create li for task
       const listItem = document.createElement("li");
       listItem.classList.add("task");
 
-      // SVGs
+      // SVGs for task buttons
       const checkSVG = App.utils.createSVG(
         "Mark Task as Complete",
         "Button to check off your task as complete. The icon changes to indicate completion.",
@@ -256,36 +361,32 @@ window.App = {
         "M15.7279 9.57627L14.3137 8.16206L5 17.4758V18.89H6.41421L15.7279 9.57627ZM17.1421 8.16206L18.5563 6.74785L17.1421 5.33363L15.7279 6.74785L17.1421 8.16206ZM7.24264 20.89H3V16.6473L16.435 3.21231C16.8256 2.82179 17.4587 2.82179 17.8492 3.21231L20.6777 6.04074C21.0682 6.43126 21.0682 7.06443 20.6777 7.45495L7.24264 20.89Z",
         "-2.65 -2.65 29 29"
       );
-      const xSVG = App.utils.createSVG(
+      const deleteSVG = App.utils.createSVG(
         "Delete Task",
         "Button to delete your current task",
         "M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z",
         "0 0 24 24"
       );
 
-      // HTML Structure
-      toDoList.appendChild(listItem);
-
-      // check-mark-div
+      // Add task HTML structure
       const checkMarkDiv = document.createElement("div");
       listItem.appendChild(checkMarkDiv);
       checkMarkDiv.classList.add("check-mark-div");
 
-      // check-mark-btn
       const checkMarkButton = document.createElement("button");
       checkMarkDiv.appendChild(checkMarkButton);
       checkMarkButton.classList.add("check-mark-btn");
       checkMarkButton.appendChild(checkSVG);
 
-      // task-info
+      // Task info
       const taskInfoDiv = document.createElement("div");
       taskInfoDiv.classList.add("task-info");
 
       const taskInfoSubheading = document.createElement("h2");
-      taskInfoSubheading.textContent = `${title}`;
+      taskInfoSubheading.textContent = task.taskName;
 
       const taskInfoParagraph = document.createElement("p");
-      taskInfoParagraph.textContent = `at ${time}`;
+      taskInfoParagraph.textContent = `at ${task.taskTime}`;
 
       listItem.appendChild(taskInfoDiv);
       taskInfoDiv.appendChild(taskInfoSubheading);
@@ -295,16 +396,18 @@ window.App = {
       const buttonsDiv = document.createElement("div");
       buttonsDiv.classList.add("buttons");
 
-      const pencilIconButton = document.createElement("button");
-      const xIconButton = document.createElement("button");
+      const editButton = document.createElement("button");
+      const deleteButton = document.createElement("button");
 
       listItem.appendChild(buttonsDiv);
 
-      buttonsDiv.appendChild(pencilIconButton);
-      pencilIconButton.appendChild(pencilSVG);
+      buttonsDiv.appendChild(editButton);
+      editButton.appendChild(pencilSVG);
 
-      buttonsDiv.appendChild(xIconButton);
-      xIconButton.appendChild(xSVG);
+      buttonsDiv.appendChild(deleteButton);
+      deleteButton.appendChild(deleteSVG);
+
+      toDoList.appendChild(listItem);
     },
 
     toggleTaskCompletion: function() {
@@ -329,11 +432,13 @@ window.App = {
       const title = document.getElementById("editListTitle").value.trim();
       const maxLength = 20;
       const titleError = document.getElementById("editListTitleError");
+
       if (title === "") {
         titleError.textContent = "Please give your list a name";
         titleError.style.display = "block";
         isValid = false;
-      } else if (title.length > maxLength ) {
+      }
+      else if (title.length > maxLength ) {
         titleError.textContent = "Your list name cannot exceed 20 characters";
         titleError.style.display = "block";
         isValid = false;
@@ -342,11 +447,13 @@ window.App = {
       const date = document.getElementById("editListDate").value.trim();
       const datePattern = /^((0?[1-9]|1[0-2])\/(0?[1-9]|[12][0-9]|3[01])\/(\d{2}|\d{4})|([A-Za-z]+) (0?[1-9]|[12][0-9]|3[01]), (\d{4}))$/;
       const dateError = document.getElementById("editListDateError");
+
       if (date === "") {
         dateError.textContent = "Please give your list a date";
         dateError.style.display = "block";
         isValid = false;
-      } else if (!datePattern.test(date)) {
+      }
+      else if (!datePattern.test(date)) {
         dateError.textContent = "Add a valid date in the format of 1/1/24 or January 1, 2024";
         dateError.style.display = "block";
         isValid = false;
@@ -354,7 +461,8 @@ window.App = {
 
       const editCurrentListPopup = document.querySelector(".edit-list-form");
       if (isValid) {
-        this.editCurrentList(title, date);
+        const listId = console.log("need to fix");
+        App.listManagement.editCurrentList(listId, title, date);
         editCurrentListPopup.style.display = "none";
         editCurrentListPopup.reset();
       }
@@ -418,16 +526,20 @@ window.App = {
 
     clearTasks: function() {
       const orderedList = document.querySelector("ol");
-      const task = document.querySelector(".task");
+      const tasks = document.querySelectorAll(".task");
 
-      orderedList.removeChild(task);
+      tasks.forEach(task => {
+        orderedList.removeChild(task);
+      });
     },
 
     clearLists: function() {
       const orderedList = document.querySelector("ol");
-      const list = document.querySelector(".list");
+      const lists = document.querySelectorAll(".list");
 
-      orderedList.removeChild(list);
+      lists.forEach(list => {
+        orderedList.removeChild(list);
+      });
     },
 
     createSVG: function(title, desc, path, viewBox, width, height, transform) {
@@ -561,11 +673,24 @@ window.App = {
       }
     }
   },
-  init: function() {
+  initializeApp: function() {
+    const lists = App.listManagement.loadData();
+
+    const lastViewedListId = localStorage.getItem("lastViewedListId");
+    if (lastViewedListId) {
+      App.listManagement.openList(parseInt(lastViewedListId));
+    }
+    else {
+      const defaultList = lists[0] || App.listManagement.getDefaultList();
+      App.listManagement.openList(defaultList.listId);
+    }
+
     App.utils.handleEvents();
     App.toDoApp.handleEvents();
     App.listManagement.handleEvents();
   }
 };
 
-App.init();
+window.addEventListener("load", function() {
+  App.initializeApp();
+});
