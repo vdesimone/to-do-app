@@ -1,20 +1,24 @@
 window.App = {
   listManagement: {
-    saveData: function(lists, activeListName) {
+    saveData: function(lists, activeListId) {
       try {
         console.log("Saving data: ", lists); // Debug log to check data
         localStorage.setItem("lists", JSON.stringify(lists)); // Save the list to local storage
 
-        // Save the listId of the last viewed list based on its listName
-        const activeList = lists.find(list => list.listName === activeListName);
+        const activeList = lists.find(list => list.listId === activeListId);
+
         if (activeList) {
-          const lastListId = activeList.listId;
-          localStorage.setItem("lastViewedListId", lastListId);
-          localStorage.setItem("lastViewedListName", activeListName);
-          console.log("Last viewed list id saved:", lastListId);
+          localStorage.setItem("lastViewedListId", activeList.listId);
+          localStorage.setItem("lastViewedListName", activeList.listName);
+          console.log("Last viewed list id saved:", activeList.listId);
         }
         else {
-          console.error("Active list not found in the lists array.");
+          if (lists.length > 0) {
+            const firstList = lists[0];
+            localStorage.setItem("lastViewedListId", firstList.listId);
+            localStorage.setItem("lastViewedListName", firstList.listName);
+            console.warn("Active list not found in the lists array. Defaulting to the first list:", firstList);
+          }
         }
       }
       catch (error) {
@@ -76,7 +80,7 @@ window.App = {
         ]
       };
       const lists = [defaultList];
-      this.saveData(lists, defaultList.listName); // Save the default list
+      this.saveData(lists, defaultList.listId); // Save the default list
       console.log("Default List Saved:", lists); // Debugging line
       return lists;
     },
@@ -88,6 +92,12 @@ window.App = {
         return alert("You have reached the maximum amount of lists. Delete one to create a new one.");
       }
 
+      // Capitalize the first letter of each word in the listName
+      listName = listName
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+
       const newList = {
         listId: Date.now(),
         listName,
@@ -96,7 +106,8 @@ window.App = {
       };
 
       lists.push(newList);
-      this.saveData(lists, listName);
+      this.saveData(lists, newList.listId);
+      this.displayLists();
     },
 
     validateAddListForm: function() {
@@ -161,9 +172,47 @@ window.App = {
 
     deleteList: function(listId) {
       const lists = this.loadData();
+
+      if (lists.length === 1) {
+        return alert("You cannot have less than 1 list.");
+      }
+
+      // Remove the list from the data array
       const updatedLists = lists.filter(list => list.listId !== listId);
-      this.saveData(updatedLists, updatedLists.listName);
-      this.renderListsPage();
+
+      const orderedList = document.querySelector(".view-lists");
+
+      const lastViewedListId = localStorage.getItem("lastViewedListId");
+
+      // Check if the deleted list was the active one
+      const activeListWasDeleted = lastViewedListId == listId;
+
+      if (activeListWasDeleted && updatedLists.length > 0) {
+        const newActiveList = updatedLists[0];
+        localStorage.setItem("lastViewedListId", newActiveList.listId);
+        localStorage.setItem("lastViewedListName", newActiveList.listName);
+        console.log("Active list was deleted. Defaulting to the first list:", newActiveList);
+      }
+
+      // Save the updated list data
+      this.saveData(updatedLists, lastViewedListId);
+
+      // Find the delete button for this list and remove the corresponding li element.
+      const deleteButtons = document.querySelectorAll(".delete-list-btn");
+      deleteButtons.forEach(deleteButton => {
+        if (parseInt(deleteButton.dataset.listId) === listId) {
+          console.log("Found delete button for listId:", listId);
+
+          const listItem = deleteButton.closest("li");
+          console.log("List item to remove:", listItem);
+
+          if (listItem) {
+            orderedList.removeChild(listItem);
+          }
+        }
+      });
+
+      this.displayLists();
     },
 
     handleEvents: function() {
@@ -171,7 +220,7 @@ window.App = {
       const openListButtons = document.querySelectorAll(".open-list-btn");
       openListButtons.forEach(button => {
         button.addEventListener("click", (e) => {
-          const listId = parseInt(e.target.dataset.listId);
+          const listId = parseInt(e.target.closest(".list").querySelector(".open-list-btn").dataset.listId);
           this.openList(listId);
         });
       });
@@ -184,7 +233,6 @@ window.App = {
           this.deleteList(listId);
         });
       });
-
     },
 
     renderListsPage: function() {
@@ -274,6 +322,10 @@ window.App = {
 
       const list = lists.find(list => list.listId === listId);
 
+      if (list.length >= 20) {
+        alert("You cannot have more than 20 lists.");
+      }
+
       if (list) {
         const newTask = {
           taskId: Date.now(),
@@ -283,10 +335,9 @@ window.App = {
         };
 
         list.tasks.push(newTask);
-        App.listManagement.saveData(lists, taskName);
+        App.listManagement.saveData(lists, list.listId);
         this.createTask(newTask);
       }
-
     },
 
     validateAddTaskForm: function() {
@@ -418,12 +469,26 @@ window.App = {
 
     },
 
-    editCurrentList: function(title, date) {
-      const listTitle = document.querySelector("header h1");
-      listTitle.textContent = `${title}`;
+    editCurrentList: function(listId, title, date) {
+      const lists = App.listManagement.loadData();
+      const list = lists.find(list => list.listId === listId);
 
-      const listDate = document.querySelector("header p");
-      listDate.textContent = `${date}`;
+      if (list) {
+        list.listName = title;
+        list.listDate = date;
+
+        // Save all lists, with the updated list
+        App.listManagement.saveData(lists, list.listId);
+
+        const listTitle = document.querySelector("header h1");
+        listTitle.textContent = `${title}`;
+
+        const listDate = document.querySelector("header p");
+        listDate.textContent = `${date}`;
+      }
+      else {
+        console.error("List not found for the provided listId", listId);
+      }
     },
 
     validateEditCurrentListForm: function() {
