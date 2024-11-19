@@ -57,7 +57,7 @@ window.App = {
         }
 
         // Fallback if no last viewed list is found
-        return lists;
+        return lists.length > 0 ? lists : this.getDefaultList();
       }
       else {
         console.log("No saved data found. Returning default list.");
@@ -111,6 +111,8 @@ window.App = {
     },
 
     validateAddListForm: function() {
+      const lists = this.loadData();
+
       let isValid = true;
 
       const title = document.getElementById("addListTitle").value.trim();
@@ -124,6 +126,11 @@ window.App = {
       }
       else if (title.length > maxLength ) {
         titleError.textContent = "Your list name cannot exceed 20 characters";
+        titleError.style.display = "block";
+        isValid = false;
+      }
+      else if (lists.some(list => list.listName === title)) {
+        titleError.textContent = "You cannot have two lists with the same name";
         titleError.style.display = "block";
         isValid = false;
       }
@@ -558,10 +565,16 @@ window.App = {
 
       const editCurrentListPopup = document.querySelector(".edit-list-form");
       if (isValid) {
-        const listId = console.log("need to fix");
-        App.listManagement.editCurrentList(listId, title, date);
-        editCurrentListPopup.style.display = "none";
-        editCurrentListPopup.reset();
+        const listId = localStorage.getItem("lastViewedListId");
+
+        if (listId) {
+          this.editCurrentList(parseInt(listId), title, date);
+          editCurrentListPopup.style.display = "none";
+          editCurrentListPopup.reset();
+        }
+        else {
+          console.error("No lastViewedListId found in localStorage.");
+        }
       }
     },
 
