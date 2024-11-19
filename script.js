@@ -413,15 +413,18 @@ window.App = {
       }
 
       const addTaskPopup = document.querySelector(".add-task-form");
+
       if (isValid) {
         const savedData = localStorage.getItem("lists");
         if (savedData) {
           const lists = JSON.parse(savedData);
           const lastViewedListId = localStorage.getItem("lastViewedListId");
+
           if (lastViewedListId) {
-            const currentListId = lists.find(list => list.listId === parseInt(lastViewedListId));
-            if (currentListId) {
-              App.toDoApp.addTask(currentListId, title, time);
+            const currentList = lists.find(list => list.listId === parseInt(lastViewedListId));
+
+            if (currentList) {
+              App.toDoApp.addTask(currentList.listId, title, time);
               addTaskPopup.style.display = "none";
               addTaskPopup.reset();
             }
@@ -447,13 +450,13 @@ window.App = {
       );
       const pencilSVG = App.utils.createSVG(
         "Edit Task",
-        "Button to edit your current task",
+        "Button to edit your current task.",
         "M15.7279 9.57627L14.3137 8.16206L5 17.4758V18.89H6.41421L15.7279 9.57627ZM17.1421 8.16206L18.5563 6.74785L17.1421 5.33363L15.7279 6.74785L17.1421 8.16206ZM7.24264 20.89H3V16.6473L16.435 3.21231C16.8256 2.82179 17.4587 2.82179 17.8492 3.21231L20.6777 6.04074C21.0682 6.43126 21.0682 7.06443 20.6777 7.45495L7.24264 20.89Z",
         "-2.65 -2.65 29 29"
       );
       const deleteSVG = App.utils.createSVG(
         "Delete Task",
-        "Button to delete your current task",
+        "Button to delete your current task.",
         "M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z",
         "0 0 24 24"
       );
