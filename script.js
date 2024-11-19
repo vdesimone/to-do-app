@@ -524,6 +524,12 @@ window.App = {
       const list = lists.find(list => list.listId === listId);
 
       if (list) {
+        // Capitalize the first letter of each word in the listName
+        title = title
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+
         list.listName = title;
         list.listDate = date;
 
@@ -785,8 +791,8 @@ window.App = {
       const editListForm = document.querySelector(".edit-list-form");
       editListForm.addEventListener("submit", function(event) {
         event.preventDefault();
-        App.utils.clearPreviousFormErrors();
 
+        App.utils.clearPreviousFormErrors();
         App.toDoApp.validateEditCurrentListForm();
       });
 
