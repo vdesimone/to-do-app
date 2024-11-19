@@ -151,6 +151,22 @@ window.App = {
       }
     },
 
+    displayLists: function() {
+      const lists = this.loadData();
+
+      // Update header
+      document.querySelector("header p").textContent = `${lists.length}/5 Lists Created`;
+
+      // Clear the currently displayed lists
+      App.utils.clearLists();
+
+      lists.forEach((list, index) => {
+        this.createList(list, index);
+      });
+
+      App.listManagement.handleEvents();
+    },
+
     openList: function(listId) {
       const lists = this.loadData();
       const list = lists.find(l => l.listId === listId);
@@ -236,16 +252,25 @@ window.App = {
     },
 
     renderListsPage: function() {
-      // update header
+      // Update header
       const lists = this.loadData();
       document.querySelector("header h1").textContent = "View Lists";
       document.querySelector("header p").textContent = `${lists.length}/5 Lists Created`;
 
-      // switch to add-list-btn
+      // Switch to add-list-btn
       const addTaskButton = document.querySelector(".add-task-btn");
       addTaskButton.classList.replace("add-task-btn", "add-list-btn");
 
-      // remove menu btn and dropdown
+      const addListButton = document.querySelector(".add-list-btn");
+      if (addListButton) {
+        const title = addListButton.querySelector("svg title");
+        const desc = addListButton.querySelector("svg desc");
+
+        title.textContent = "Add a List";
+        desc.textContent = "Button to create a new list."
+      }
+
+      // Remove menu btn and dropdown
       const navBar = document.querySelector(".navbar");
       const menuButton = document.querySelector(".ellipsis-icon");
       navBar.removeChild(menuButton);
@@ -253,31 +278,35 @@ window.App = {
       const dropdownMenu = document.querySelector(".dropdown-menu");
       dropdownMenu.style.display = "none";
 
-      this.renderList(lists);
-    },
-
-    renderLists: function(lists) {
-      App.utils.clearLists();
-
-      lists.forEach(list => {
-        this.createList(list);
-      });
-    },
-
-    createList: function(list) {
+      // Change the class of the ordered list
       const orderedList = document.querySelector("ol");
       orderedList.classList.replace("to-do-list", "view-lists");
 
+      this.renderLists(lists);
+
+      this.handleEvents();
+    },
+
+    renderLists: function(lists) {
+      App.utils.clearTasks();
+      App.utils.clearLists();
+
+      lists.forEach((list, index) => {
+        this.createList(list, index);
+      });
+    },
+
+    createList: function(list, index) {
       // SVGs
       const openListSVG = App.utils.createSVG(
         "Open List",
-        "Button to open the current list",
+        "Button to open the current list.",
         "M10 6V8H5V19H16V14H18V20C18 20.5523 17.5523 21 17 21H4C3.44772 21 3 20.5523 3 20V7C3 6.44772 3.44772 6 4 6H10ZM21 3V11H19L18.9999 6.413L11.2071 14.2071L9.79289 12.7929L17.5849 5H13V3H21Z",
         "-2.75 -2.75 30 30"
       );
       const deleteListSVG = App.utils.createSVG(
         "Delete List",
-        "Button to delete the current list",
+        "Button to delete the current list.",
         "M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z",
         "0 0 24 24"
       );
@@ -287,13 +316,14 @@ window.App = {
       listItem.classList.add("list");
 
       // HTML Structure for the list
+      const orderedList = document.querySelector("ol");
       orderedList.appendChild(listItem);
 
       // h2 and span tag for list name
       const listName = document.createElement("h2");
       listItem.appendChild(listName);
       const spanTag = document.createElement("span");
-      spanTag.textContent = "#. "
+      spanTag.textContent = `${index + 1}. `
       listName.appendChild(spanTag);
       listName.appendChild(document.createTextNode(list.listName));
 
@@ -312,10 +342,12 @@ window.App = {
       // delete list button
       const deleteListButton = document.createElement("button");
       deleteListButton.classList.add("delete-list-btn");
+      deleteListButton.dataset.listId = list.listId;
       buttonsDiv.appendChild(deleteListButton);
       deleteListButton.appendChild(deleteListSVG);
     }
   },
+
   toDoApp: {
     addTask: function(listId, taskName, taskTime) {
       const lists = App.listManagement.loadData();
