@@ -183,8 +183,16 @@ window.App = {
         document.querySelector("header h1").textContent = list.listName;
         document.querySelector("header p").textContent = list.listDate;
 
-        // Clear existing tasks
+        // Clear existing tasks and lists
         App.utils.clearTasks();
+        App.utils.clearLists();
+
+        // Create dropdown button if it does not exist
+        const dropdownButton = document.querySelector(".ellipsis-icon");
+        if (!dropdownButton) {
+          App.utils.createNavbar();
+          App.toDoApp.handleEvents();
+        }
 
         // Render the tasks for this list
         list.tasks.forEach(task => {
@@ -690,6 +698,43 @@ window.App = {
       svg.appendChild(svgPath);
 
       return svg;
+    },
+
+    createNavbar: function() {
+      // Replace add-list-btn to add-task-btn
+      const addListButton = document.querySelector(".add-list-btn");
+      addListButton.classList.replace("add-list-btn", "add-task-btn");
+
+      const addTaskButton = document.querySelector(".add-task-btn");
+      if (addTaskButton) {
+        const title = addListButton.querySelector("svg title");
+        const desc = addListButton.querySelector("svg desc");
+
+        title.textContent = "Add a Task";
+        desc.textContent = "Button to add a new task to your list."
+      }
+
+      // Add dropdown menu button
+      const navBar = document.querySelector(".navbar");
+      const ellipsisButton = document.createElement("button");
+      ellipsisButton.classList.add("nav-icon", "ellipsis-icon");
+
+      const ellipsisSVG = App.utils.createSVG(
+        "Open Dropdown Menu",
+        "Button to open a dropdown menu with two options: Edit Current List and View Lists.",
+        "M12 3C10.9 3 10 3.9 10 5C10 6.1 10.9 7 12 7C13.1 7 14 6.1 14 5C14 3.9 13.1 3 12 3ZM12 17C10.9 17 10 17.9 10 19C10 20.1 10.9 21 12 21C13.1 21 14 20.1 14 19C14 17.9 13.1 17 12 17ZM12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z",
+        "2 2 20 20",
+        "40",
+        "40",
+        "rotate(90)"
+      );
+
+      ellipsisButton.appendChild(ellipsisSVG);
+      navBar.appendChild(ellipsisButton);
+
+      // Switch ordered list class to to-do-lists
+      const orderedList = document.querySelector("ol");
+      orderedList.classList.replace("view-lists", "to-do-list");
     },
 
     // Handle add button event and form events
