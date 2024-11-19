@@ -373,6 +373,9 @@ window.App = {
         alert("You cannot have more than 20 lists.");
       }
 
+      // Capitalize the first letter of the first word in taskName
+      taskName = taskName.charAt(0).toUpperCase() + taskName.slice(1);
+
       if (list) {
         const newTask = {
           taskId: Date.now(),
@@ -524,7 +527,7 @@ window.App = {
       const list = lists.find(list => list.listId === listId);
 
       if (list) {
-        // Capitalize the first letter of each word in the listName
+        // Capitalize the first letter of each word in the title
         title = title
         .split(" ")
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
