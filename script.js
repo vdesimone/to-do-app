@@ -832,6 +832,9 @@ window.App = {
     }
   },
   initializeApp: function() {
+    App.utils.handleEvents();
+    App.toDoApp.handleEvents();
+
     const lists = App.listManagement.loadData();
 
     const lastViewedListId = localStorage.getItem("lastViewedListId");
@@ -842,10 +845,6 @@ window.App = {
       const defaultList = lists[0] || App.listManagement.getDefaultList();
       App.listManagement.openList(defaultList.listId);
     }
-
-    App.utils.handleEvents();
-    App.toDoApp.handleEvents();
-    App.listManagement.handleEvents();
   }
 };
 
