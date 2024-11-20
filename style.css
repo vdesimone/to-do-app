@@ -270,7 +270,11 @@ form label {
 .check-mark-btn {
   border-radius: 50%;
   margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .task-info {
   display: flex;
   flex-direction: column;
@@ -301,6 +305,23 @@ form label {
 }
 .buttons button {
   border-radius: 0.25rem;
+}
+
+/* COMPLETED TASK TOGGLE */
+.completed .task-info h2{
+  color: var(--very-dark-grey);
+  text-decoration: line-through;
+
+}
+.completed .task-info p{
+  color: var(--dark-grey);
+  text-decoration: line-through;
+}
+.completed .check-mark-btn{
+  background-color: var(--green);
+}
+.completed .check-mark-btn .icon{
+  fill: var(--white);
 }
 
 /* FOOTER */

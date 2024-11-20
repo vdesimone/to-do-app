@@ -2,7 +2,6 @@ window.App = {
   listManagement: {
     saveData: function(lists, activeListId) {
       try {
-        console.log("Saving data: ", lists); // Debug log to check data
         localStorage.setItem("lists", JSON.stringify(lists)); // Save the list to local storage
 
         const activeList = lists.find(list => list.listId === activeListId);
@@ -10,7 +9,6 @@ window.App = {
         if (activeList) {
           localStorage.setItem("lastViewedListId", activeList.listId);
           localStorage.setItem("lastViewedListName", activeList.listName);
-          console.log("Last viewed list id saved:", activeList.listId);
         }
         else {
           if (lists.length > 0) {
@@ -27,14 +25,10 @@ window.App = {
     },
 
     loadData: function() {
-      console.log("Loading data...");
       const savedData = localStorage.getItem("lists");
-      console.log("Saved Data:", savedData);
 
       const lastViewedListId = localStorage.getItem("lastViewedListId");
       const lastViewedListName = localStorage.getItem("lastViewedListName");
-      console.log("Last viewed list id: ", lastViewedListId);
-      console.log("Last viewed list name: ", lastViewedListName);
 
       // If saved data exists, parse and return it
       if (savedData) {
@@ -43,7 +37,6 @@ window.App = {
         if (lastViewedListId) {
           const lastList = lists.find(list => list.listId === parseInt(lastViewedListId));
           if (lastList) {
-            console.log("Found last viewed list:", lastList);
             return lists;
           }
         }
@@ -51,7 +44,6 @@ window.App = {
         if (lastViewedListName) {
           const lastListByName = lists.find(list => list.listName === lastViewedListName);
           if (lastListByName) {
-            console.log("Found last viewed list by name:", lastListByName);
             return lists;
           }
         }
@@ -81,7 +73,6 @@ window.App = {
       };
       const lists = [defaultList];
       this.saveData(lists, defaultList.listId); // Save the default list
-      console.log("Default List Saved:", lists); // Debugging line
       return lists;
     },
 
@@ -198,6 +189,8 @@ window.App = {
         list.tasks.forEach(task => {
           App.toDoApp.createTask(task);
         });
+
+        App.toDoApp.taskFunctionality(listId);
       }
     },
 
@@ -232,10 +225,8 @@ window.App = {
       const deleteButtons = document.querySelectorAll(".delete-list-btn");
       deleteButtons.forEach(deleteButton => {
         if (parseInt(deleteButton.dataset.listId) === listId) {
-          console.log("Found delete button for listId:", listId);
 
           const listItem = deleteButton.closest("li");
-          console.log("List item to remove:", listItem);
 
           if (listItem) {
             orderedList.removeChild(listItem);
@@ -448,16 +439,19 @@ window.App = {
       const toDoList = document.querySelector("ol");
       toDoList.classList.add("to-do-list");
 
-      // Create li for task
+      // Create li for task with data-task-id attribute
       const listItem = document.createElement("li");
       listItem.classList.add("task");
+      listItem.setAttribute("data-task-id", task.taskId);
 
       // SVGs for task buttons
       const checkSVG = App.utils.createSVG(
         "Mark Task as Complete",
         "Button to check off your task as complete. The icon changes to indicate completion.",
         "M9.9997 15.1709L19.1921 5.97852L20.6063 7.39273L9.9997 17.9993L3.63574 11.6354L5.04996 10.2212L9.9997 15.1709Z",
-        "-1 0 26 20"
+        "0 0 24 24",
+        "36",
+        "36"
       );
       const pencilSVG = App.utils.createSVG(
         "Edit Task",
@@ -471,6 +465,8 @@ window.App = {
         "M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z",
         "0 0 24 24"
       );
+
+      checkSVG.style.display = "none";
 
       // Add task HTML structure
       const checkMarkDiv = document.createElement("div");
@@ -514,8 +510,58 @@ window.App = {
       toDoList.appendChild(listItem);
     },
 
-    toggleTaskCompletion: function() {
+    taskFunctionality: function(listId) {
+      const taskContainer = document.querySelector(".to-do-list");
 
+      // Check that the taskContainer exists to avoid errors if it doesn't
+      if (taskContainer) {
+        // Event delegation: Listen for clicks on the task container
+        taskContainer.addEventListener("click", function(event) {
+          const checkMarkButton = event.target.closest(".check-mark-btn");
+
+          if (checkMarkButton) {
+            const taskElement = checkMarkButton.closest("li");
+            const taskId = taskElement.getAttribute("data-task-id");
+
+            if (taskId) {
+              App.toDoApp.toggleTaskCompletion(parseInt(listId), parseInt(taskId));
+            }
+          }
+        });
+      }
+    },
+
+    toggleTaskCompletion: function(listId, taskId) {
+      const lists = App.listManagement.loadData();
+      const list = lists.find(l => l.listId === listId);
+
+      if (list) {
+        const task = list.tasks.find(task => task.taskId === taskId);
+
+        if (task) {
+          // Toggle the task completion state
+          task.completed = !task.completed;
+
+          // Save the updated list to localStorage after changing the task's completion state
+          App.listManagement.saveData(lists, list.listId);
+
+          const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+
+          if (taskElement) {
+            const checkMarkButton = taskElement.querySelector(".check-mark-btn");
+            const checkSVG = checkMarkButton.querySelector("svg");
+
+            if (task.completed) {
+              taskElement.classList.add("completed");
+              checkSVG.style.display = "block";
+            }
+            else {
+              taskElement.classList.remove("completed");
+              checkSVG.style.display = "none";
+            }
+          }
+        }
+      }
     },
 
     editTask: function() {
@@ -789,14 +835,6 @@ window.App = {
         App.utils.clearPreviousFormErrors();
 
         App.listManagement.validateAddListForm();
-      });
-
-      const editListForm = document.querySelector(".edit-list-form");
-      editListForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        App.utils.clearPreviousFormErrors();
-        App.toDoApp.validateEditCurrentListForm();
       });
 
       // Dark/Light Mode
