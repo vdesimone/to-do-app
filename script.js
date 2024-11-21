@@ -110,17 +110,22 @@ window.App = {
       const titleError = document.getElementById("addListTitleError");
       const maxLength = 20;
 
+      const formattedTitle = title
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+
       if (title === "") {
         titleError.textContent = "Please give your list a name";
         titleError.style.display = "block";
         isValid = false;
       }
       else if (title.length > maxLength ) {
-        titleError.textContent = "Your list name cannot exceed 20 characters";
+        titleError.textContent = `Your list name cannot exceed ${maxLength} characters`;
         titleError.style.display = "block";
         isValid = false;
       }
-      else if (lists.some(list => list.listName === title)) {
+      else if (lists.some(list => list.listName === formattedTitle)) {
         titleError.textContent = "You cannot have two lists with the same name";
         titleError.style.display = "block";
         isValid = false;
@@ -143,7 +148,7 @@ window.App = {
 
       const addListPopup = document.querySelector(".add-list-form");
       if (isValid) {
-        App.listManagement.addList(title, date);
+        App.listManagement.addList(formattedTitle, date);
         addListPopup.style.display = "none";
         addListPopup.reset();
       }
@@ -178,6 +183,10 @@ window.App = {
         App.utils.clearTasks();
         App.utils.clearLists();
 
+        // Replace ordered list class with to-do-list
+        const orderedList = document.querySelector("ol");
+        orderedList.classList.replace("view-lists", "to-do-list");
+
         // Create dropdown button if it does not exist
         const dropdownButton = document.querySelector(".ellipsis-icon");
         if (!dropdownButton) {
@@ -188,7 +197,24 @@ window.App = {
         // Render the tasks for this list
         list.tasks.forEach(task => {
           App.toDoApp.createTask(task);
+
+          const taskElement = document.querySelector(`[data-task-id="${task.taskId}"]`);
+          if (taskElement) {
+            const checkMarkButton = taskElement.querySelector(".check-mark-btn");
+            const checkSVG = checkMarkButton.querySelector("svg");
+
+            if (task.completed) {
+              taskElement.classList.add("completed");
+              checkSVG.style.display = "block";
+            }
+            else {
+              taskElement.classList.remove("completed");
+              checkSVG.style.display = "none";
+            }
+          }
         });
+
+        App.listManagement.saveData(lists, listId);
 
         App.toDoApp.taskFunctionality(listId);
       }
@@ -265,7 +291,9 @@ window.App = {
 
       // Switch to add-list-btn
       const addTaskButton = document.querySelector(".add-task-btn");
-      addTaskButton.classList.replace("add-task-btn", "add-list-btn");
+      if (addTaskButton) {
+        addTaskButton.classList.replace("add-task-btn", "add-list-btn");
+      }
 
       const addListButton = document.querySelector(".add-list-btn");
       if (addListButton) {
@@ -279,14 +307,21 @@ window.App = {
       // Remove menu btn and dropdown
       const navBar = document.querySelector(".navbar");
       const menuButton = document.querySelector(".ellipsis-icon");
-      navBar.removeChild(menuButton);
+      if (navBar && menuButton) {
+        navBar.removeChild(menuButton);
+      }
 
       const dropdownMenu = document.querySelector(".dropdown-menu");
-      dropdownMenu.style.display = "none";
+      if (dropdownMenu) {
+        dropdownMenu.style.display = "none";
+      }
 
       // Change the class of the ordered list
       const orderedList = document.querySelector("ol");
-      orderedList.classList.replace("to-do-list", "view-lists");
+      if (orderedList) {
+        orderedList.removeEventListener("click", App.toDoApp.handleTaskClick);
+        orderedList.classList.replace("to-do-list", "view-lists");
+      }
 
       this.renderLists(lists);
 
@@ -394,14 +429,14 @@ window.App = {
         isValid = false;
       }
       else if (title.length > maxLength ) {
-        titleError.textContent = "Your task name cannot exceed 47 characters";
+        titleError.textContent = `Your task name cannot exceed ${maxLength} characters`;
         titleError.style.display = "block";
         isValid = false;
       }
 
-      const time = document.getElementById("time").value.trim();
+      const time = document.getElementById("addTaskTime").value.trim();
       const timePattern = /^(0?[1-9]|1[0-2])(:[0-5][0-9])? ?(am|AM|pm|PM)$/;
-      const timeError = document.getElementById("timeError");
+      const timeError = document.getElementById("addTaskTimeError");
 
       if (time === "") {
         timeError.textContent = "Please add a start time for your task";
@@ -436,9 +471,6 @@ window.App = {
     },
 
     createTask: function(task) {
-      const toDoList = document.querySelector("ol");
-      toDoList.classList.add("to-do-list");
-
       // Create li for task with data-task-id attribute
       const listItem = document.createElement("li");
       listItem.classList.add("task");
@@ -507,27 +539,32 @@ window.App = {
       buttonsDiv.appendChild(deleteButton);
       deleteButton.appendChild(deleteSVG);
 
+      const toDoList = document.querySelector("ol");
       toDoList.appendChild(listItem);
     },
 
     taskFunctionality: function(listId) {
       const taskContainer = document.querySelector(".to-do-list");
 
-      // Check that the taskContainer exists to avoid errors if it doesn't
       if (taskContainer) {
-        // Event delegation: Listen for clicks on the task container
-        taskContainer.addEventListener("click", function(event) {
-          const checkMarkButton = event.target.closest(".check-mark-btn");
+        // Check if the listener is already attached for this listId
+        if (taskContainer.dataset.listenerAttached === listId.toString()) {
+          return;
+        }
 
-          if (checkMarkButton) {
-            const taskElement = checkMarkButton.closest("li");
-            const taskId = taskElement.getAttribute("data-task-id");
+        // Remove the old event listener if one exists
+        if (taskContainer.dataset.listenerAttached) {
+          taskContainer.removeEventListener("click", this.handleTaskClickWithListId);
+        }
 
-            if (taskId) {
-              App.toDoApp.toggleTaskCompletion(parseInt(listId), parseInt(taskId));
-            }
-          }
-        });
+        // Create a bound version of the event handler that includes the listId
+        const handleTaskClickWithListId = (event) => this.handleTaskClick(event, listId);
+
+        // Add the event listener for the current listId
+        taskContainer.addEventListener("click", handleTaskClickWithListId);
+
+        // Store the current listId in the dataset to track which list's listener is active
+        taskContainer.dataset.listenerAttached = listId.toString();
       }
     },
 
@@ -560,6 +597,19 @@ window.App = {
               checkSVG.style.display = "none";
             }
           }
+        }
+      }
+    },
+
+    handleTaskClick: function(event, listId) {
+      const checkMarkButton = event.target.closest(".check-mark-btn");
+
+      if (checkMarkButton) {
+        const taskElement = checkMarkButton.closest("li");
+        const taskId = taskElement.getAttribute("data-task-id");
+
+        if (taskId) {
+          this.toggleTaskCompletion(listId, parseInt(taskId));
         }
       }
     },
@@ -609,7 +659,7 @@ window.App = {
         isValid = false;
       }
       else if (title.length > maxLength ) {
-        titleError.textContent = "Your list name cannot exceed 20 characters";
+        titleError.textContent = `Your list name cannot exceed ${maxLength} characters`;
         titleError.style.display = "block";
         isValid = false;
       }
@@ -786,10 +836,6 @@ window.App = {
 
       ellipsisButton.appendChild(ellipsisSVG);
       navBar.appendChild(ellipsisButton);
-
-      // Switch ordered list class to to-do-lists
-      const orderedList = document.querySelector("ol");
-      orderedList.classList.replace("view-lists", "to-do-list");
     },
 
     // Handle add button event and form events
