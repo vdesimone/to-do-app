@@ -569,6 +569,9 @@ window.App = {
         const handleEditTaskClickWithId = (event) => this.handleEditTaskClick(event, listId);
         taskContainer.addEventListener("click", handleEditTaskClickWithId);
 
+        const handleDeleteTaskClickWithId = (event) => this.handleDeleteTaskClick(event, listId);
+        taskContainer.addEventListener("click", handleDeleteTaskClickWithId);
+
         // Store the current listId in the dataset to track which list's listener is active
         taskContainer.dataset.listenerAttached = listId.toString();
 
@@ -643,6 +646,19 @@ window.App = {
             // Show the edit popup
             editTaskPopup.style.display = "flex";
           }
+        }
+      }
+    },
+
+    handleDeleteTaskClick: function(event, listId) {
+      const deleteTaskButton = event.target.closest(".delete-task-btn");
+
+      if (deleteTaskButton) {
+        const taskElement = deleteTaskButton.closest("li");
+        const taskId = taskElement.getAttribute("data-task-id");
+
+        if (taskId) {
+          this.deleteTask(listId, taskId, taskElement);
         }
       }
     },
@@ -835,8 +851,27 @@ window.App = {
       }
     },
 
-    deleteTask: function() {
+    deleteTask: function(listId, taskId, taskElement) {
+      const lists = App.listManagement.loadData();
 
+      const list = lists.find(list => list.listId === listId);
+
+      if (list) {
+        // Filter out the task from the list's tasks
+        const updatedTasks = list.tasks.filter(task => task.taskId !== parseInt(taskId));
+
+        // Update the list with the new tasks array
+        list.tasks = updatedTasks;
+
+        // Save the updated list back to localStorage
+        App.listManagement.saveData(lists, listId);
+
+        // Remove the task element from the DOM
+        taskElement.remove();
+      }
+      else {
+        console.error(`List with ID ${listId} not found.`);
+      }
     },
 
     handleEvents: function() {
