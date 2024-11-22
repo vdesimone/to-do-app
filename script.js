@@ -198,7 +198,7 @@ window.App = {
         list.tasks.forEach(task => {
           App.toDoApp.createTask(task);
 
-          const taskElement = document.querySelector(`[data-task-id="${task.taskId}"]`);
+          const taskElement = document.querySelector(`li[data-task-id="${task.taskId}"]`);
           if (taskElement) {
             const checkMarkButton = taskElement.querySelector(".check-mark-btn");
             const checkSVG = checkMarkButton.querySelector("svg");
@@ -529,7 +529,10 @@ window.App = {
       buttonsDiv.classList.add("buttons");
 
       const editButton = document.createElement("button");
+      editButton.classList.add("edit-task-btn");
+
       const deleteButton = document.createElement("button");
+      deleteButton.classList.add("delete-task-btn");
 
       listItem.appendChild(buttonsDiv);
 
@@ -563,8 +566,12 @@ window.App = {
         // Add the event listener for the current listId
         taskContainer.addEventListener("click", handleTaskClickWithListId);
 
+        const handleEditTaskClickWithId = (event) => this.handleEditTaskClick(event, listId);
+        taskContainer.addEventListener("click", handleEditTaskClickWithId);
+
         // Store the current listId in the dataset to track which list's listener is active
         taskContainer.dataset.listenerAttached = listId.toString();
+
       }
     },
 
@@ -582,7 +589,7 @@ window.App = {
           // Save the updated list to localStorage after changing the task's completion state
           App.listManagement.saveData(lists, list.listId);
 
-          const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+          const taskElement = document.querySelector(`li[data-task-id="${taskId}"]`);
 
           if (taskElement) {
             const checkMarkButton = taskElement.querySelector(".check-mark-btn");
@@ -614,8 +621,127 @@ window.App = {
       }
     },
 
-    editTask: function() {
+    handleEditTaskClick: function(event, listId) {
+      const editTaskButton = event.target.closest(".edit-task-btn");
 
+      if (editTaskButton) {
+        const taskElement = editTaskButton.closest("li");
+        const taskId = taskElement.getAttribute("data-task-id");
+
+        if (taskId) {
+          const editTaskPopup = document.querySelector(".edit-task-form");
+          const task = this.getTaskById(listId, taskId);
+
+          if (task) {
+            // Populate the form with the current task's title and time
+            document.getElementById("editTaskTitle").value = task.taskName;
+            document.getElementById("editTaskTime").value = task.taskTime;
+
+            // Store taskId in the form for later use
+            editTaskPopup.setAttribute("data-task-id", taskId);
+
+            // Show the edit popup
+            editTaskPopup.style.display = "flex";
+          }
+        }
+      }
+    },
+
+    getTaskById: function(listId, taskId) {
+      const lists = App.listManagement.loadData();
+      const list = lists.find(l => l.listId === listId);
+
+      if (list) {
+        const task = list.tasks.find(task => task.taskId === parseInt(taskId));
+        return task;
+      }
+
+      return null;
+    },
+
+    editTask: function(listId, taskId, title, time) {
+      const lists = App.listManagement.loadData();
+      const list = lists.find(list => list.listId === listId);
+      if (list) {
+        const task = list.tasks.find(task => task.taskId === taskId);
+
+        if (task) {
+          task.taskName = title;
+          task.taskTime = time;
+
+          App.listManagement.saveData(lists, list.listId);
+
+          this.displayEditedTask(taskId, title, time);
+        }
+      }
+      else {
+        console.error("Task not found for the provided listId", taskId);
+      }
+    },
+
+    validateEditTaskForm: function() {
+      let isValid = true;
+
+      const title = document.getElementById("editTaskTitle").value.trim();
+      const titleError = document.getElementById("editTaskTitleError");
+      const maxLength = 47;
+
+      if (title === "") {
+        titleError.textContent = "Please give your task a name";
+        titleError.style.display = "block";
+        isValid = false;
+      }
+      else if (title.length > maxLength ) {
+        titleError.textContent = `Your task name cannot exceed ${maxLength} characters`;
+        titleError.style.display = "block";
+        isValid = false;
+      }
+
+      const time = document.getElementById("editTaskTime").value.trim();
+      const timePattern = /^(0?[1-9]|1[0-2])(:[0-5][0-9])? ?(am|AM|pm|PM)$/;
+      const timeError = document.getElementById("editTaskTimeError");
+
+      if (time === "") {
+        timeError.textContent = "Please add a start time for your task";
+        timeError.style.display = "block";
+        isValid = false;
+      }
+      else if (!timePattern.test(time)) {
+        timeError.textContent = "Add a time with am or pm after it";
+        timeError.style.display = "block";
+        isValid = false;
+      }
+
+      const editTaskPopup = document.querySelector(".edit-task-form");
+      if (isValid) {
+        const listId = localStorage.getItem("lastViewedListId");
+
+        if (listId) {
+          const taskId = editTaskPopup.getAttribute("data-task-id");
+
+          if (taskId) {
+            this.editTask(parseInt(listId), parseInt(taskId), title, time);
+
+            editTaskPopup.style.display = "none";
+            editTaskPopup.reset();
+          }
+          else {
+            console.error("No taskId found.");
+          }
+        } else {
+          console.error("No listId found in localStorage.");
+        }
+      }
+    },
+
+    displayEditedTask: function(taskId, title, time) {
+      const taskElement = document.querySelector(`li[data-task-id="${taskId}"]`);
+
+      const taskName = taskElement.querySelector(".task-info h2");
+      taskName.textContent = title;
+
+      const taskTime = taskElement.querySelector(".task-info p");
+      taskTime.textContent = `at ${time}`;
     },
 
     editCurrentList: function(listId, title, date) {
@@ -694,6 +820,21 @@ window.App = {
       }
     },
 
+    displayPreviousListInputs: function() {
+      const lists = App.listManagement.loadData();
+      const listId = localStorage.getItem("lastViewedListId");
+
+      const currentList = lists.find(list => list.listId === parseInt(listId));
+
+      const listName = currentList.listName
+      const listDate = currentList.listDate
+
+      if (currentList) {
+        document.getElementById("editListTitle").value = listName;
+        document.getElementById("editListDate").value = listDate;
+      }
+    },
+
     deleteTask: function() {
 
     },
@@ -717,6 +858,7 @@ window.App = {
       const editCurrentListPopup = document.querySelector(".edit-list-form");
 
       editCurrentListButton.addEventListener("click", () => {
+        App.toDoApp.displayPreviousListInputs();
         editCurrentListPopup.style.display = "flex";
       });
 
@@ -881,6 +1023,14 @@ window.App = {
         App.utils.clearPreviousFormErrors();
 
         App.listManagement.validateAddListForm();
+      });
+
+      const editTaskForm = document.querySelector(".edit-task-form");
+      editTaskForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        App.utils.clearPreviousFormErrors();
+
+        App.toDoApp.validateEditTaskForm();
       });
 
       // Dark/Light Mode

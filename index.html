@@ -76,6 +76,25 @@
           </div>
         </div>
       </form>
+      <form class="edit-task-form popup" novalidate>
+        <div class="edit-task-container popup-container">
+          <h2>Edit Task</h2>
+          <div class="title-of-task">
+            <label for="editTaskTitle">Title of Task</label>
+            <input class="edit-task-input" type="text" id="editTaskTitle" name="editTaskTitle" placeholder="Enter title here" required>
+            <p class="error-message" id="editTaskTitleError">Error Message</p>
+          </div>
+          <div class="time-of-task">
+            <label for="editTaskTime">Time of Task</label>
+            <input class="edit-task-input" type="text" id="editTaskTime" name="editTaskTime" placeholder="Enter time here" required>
+            <p class="error-message" id="editTaskTimeError">Error Message</p>
+          </div>
+          <div class="form-buttons">
+            <input class="cancel-btn" id="edit-task-cancel-btn" type="button" value="Cancel">
+            <input type="submit" value="Save">
+          </div>
+        </div>
+      </form>
       <form class="edit-list-form popup" novalidate>
         <div class="edit-list-container popup-container">
           <h2>Edit List</h2>

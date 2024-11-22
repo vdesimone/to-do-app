@@ -194,6 +194,7 @@ form label {
   margin-bottom: 0.5rem;
 }
 .add-task-input:focus-visible,
+.edit-task-input:focus-visible,
 .edit-list-input:focus-visible,
 .add-list-input:focus-visible {
   border: 2px solid var(--very-dark-grey);
