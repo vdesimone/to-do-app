@@ -80,7 +80,8 @@ window.App = {
       const lists = this.loadData();
 
       if (lists.length >= 5) {
-        return alert("You have reached the maximum amount of lists. Delete one to create a new one.");
+        const errorMessage = "You have reached the maximum amount of lists. Delete one to create a new one.";
+        return App.utils.displayErrorPopup(errorMessage);
       }
 
       // Capitalize the first letter of each word in the listName
@@ -224,7 +225,8 @@ window.App = {
       const lists = this.loadData();
 
       if (lists.length === 1) {
-        return alert("You cannot have less than 1 list.");
+        const errorMessage = "You cannot have less than 1 list.";
+        return App.utils.displayErrorPopup(errorMessage);
       }
 
       // Remove the list from the data array
@@ -395,8 +397,9 @@ window.App = {
 
       const list = lists.find(list => list.listId === listId);
 
-      if (list.length >= 20) {
-        alert("You cannot have more than 20 lists.");
+      if (list.tasks.length >= 20) {
+        const errorMessage = "You cannot have more than 20 tasks per list.";
+        return App.utils.displayErrorPopup(errorMessage);
       }
 
       // Capitalize the first letter of the first word in taskName
@@ -1013,6 +1016,21 @@ window.App = {
 
       ellipsisButton.appendChild(ellipsisSVG);
       navBar.appendChild(ellipsisButton);
+    },
+
+    displayErrorPopup: function(message) {
+      const errorMessagePopup = document.querySelector(".error-message-popup");
+      const errorMessage = errorMessagePopup.querySelector(".error-message-container p");
+
+      errorMessage.textContent = message;
+
+      errorMessagePopup.style.display = "flex";
+
+      const errorMessageButton = errorMessagePopup.querySelector(".error-message-container button");
+      errorMessageButton.addEventListener("click", function() {
+        errorMessagePopup.style.display = "none";
+        errorMessage.textContent = "Error message here."
+      });
     },
 
     // Handle add button event and form events
