@@ -58,10 +58,14 @@ window.App = {
     },
 
     getDefaultList: function() {
+      const today = new Date();
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      const formattedDate = today.toLocaleDateString("en-US", options);
+
       const defaultList = {
         listId: Date.now(),
         listName: "Sample List",
-        listDate: "January 1, 2025",
+        listDate: formattedDate,
         tasks: [
           {
             taskId: Date.now() + 1,
