@@ -1067,7 +1067,6 @@ window.App = {
         "rotate(90)"
       );
 
-      console.log("I exist!!", ellipsisButton);
       ellipsisButton.setAttribute("aria-label", "Open dropdown menu");
       ellipsisButton.setAttribute("aria-pressed", "false");
 
@@ -1176,7 +1175,6 @@ window.App = {
 
         localStorage.setItem("dark-mode", "true");
         document.body.classList.add("dark-mode");
-        console.log("Switched to dark mode");
       }
       else if (darkLightModeButton.classList.contains("sun-icon")) {
         const newIcon = this.createSVG(
@@ -1198,7 +1196,6 @@ window.App = {
 
         localStorage.setItem("dark-mode", "false");
         document.body.classList.remove("dark-mode");
-        console.log("Switched to light mode");
       }
     },
 
