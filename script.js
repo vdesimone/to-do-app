@@ -947,6 +947,7 @@ window.App = {
       const editCurrentListPopup = document.querySelector(".edit-list-form");
 
       editCurrentListButton.addEventListener("click", () => {
+        App.utils.clearPreviousFormErrors();
         App.toDoApp.displayPreviousListInputs();
         editCurrentListPopup.style.display = "flex";
       });
