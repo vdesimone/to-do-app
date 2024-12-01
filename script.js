@@ -601,26 +601,25 @@ window.App = {
           return;
         }
 
-        // Remove the old event listener if one exists
+        // If a listener is attached, remove the old event listeners
         if (taskContainer.dataset.listenerAttached) {
           taskContainer.removeEventListener("click", this.handleTaskClickWithListId);
+          taskContainer.removeEventListener("click", this.handleEditTaskClickWithId);
+          taskContainer.removeEventListener("click", this.handleDeleteTaskClickWithId);
         }
 
-        // Create a bound version of the event handler that includes the listId
-        const handleTaskClickWithListId = (event) => this.handleTaskClick(event, listId);
+        // Create bound versions of the event handlers that include the listId
+        this.handleTaskClickWithListId = (event) => this.handleTaskClick(event, listId);
+        this.handleEditTaskClickWithId = (event) => this.handleEditTaskClick(event, listId);
+        this.handleDeleteTaskClickWithId = (event) => this.handleDeleteTaskClick(event, listId);
 
-        // Add the event listener for the current listId
-        taskContainer.addEventListener("click", handleTaskClickWithListId);
-
-        const handleEditTaskClickWithId = (event) => this.handleEditTaskClick(event, listId);
-        taskContainer.addEventListener("click", handleEditTaskClickWithId);
-
-        const handleDeleteTaskClickWithId = (event) => this.handleDeleteTaskClick(event, listId);
-        taskContainer.addEventListener("click", handleDeleteTaskClickWithId);
+        // Add the event listeners for the current listId
+        taskContainer.addEventListener("click", this.handleTaskClickWithListId);
+        taskContainer.addEventListener("click", this.handleEditTaskClickWithId);
+        taskContainer.addEventListener("click", this.handleDeleteTaskClickWithId);
 
         // Store the current listId in the dataset to track which list's listener is active
         taskContainer.dataset.listenerAttached = listId.toString();
-
       }
     },
 
