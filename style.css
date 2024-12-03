@@ -48,8 +48,10 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
+  min-height: 100dvh;
   background-color: var(--grey-600);
   transition: background-color 0.18s linear;
+  overflow-x: hidden;
 }
 
 /* MAIN CONTAINER */
@@ -57,8 +59,11 @@ body {
   position: relative;
   background-color: var(--white);
   display: flex;
-  width: 37.5rem;
-  min-height: 42rem;
+  max-width: 37.5rem;
+  width: 100%;
+  max-height: 42rem;
+  height: 97%;
+  min-height: 18.15rem;
   flex-direction: column;
   padding: 3rem;
   border-radius: 0.625rem;
@@ -69,17 +74,18 @@ body {
 .nav-section {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.3rem;
+  margin-bottom: 1.3rem;
   min-height: 7.395rem;
+  height: auto;
 }
 
 header {
   width: 48%;
+  height: auto;
 }
 header h1 {
   font-size: 2.5rem;
   text-wrap: wrap;
-  overflow-wrap: break-word;
   margin-bottom: 0.25rem;
   color: var(--black);
 }
@@ -261,19 +267,25 @@ form label {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  max-height: 28.3055rem;
+  height: 29rem;
   overflow-y: auto;
 }
 .task, .list {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 4.5rem;
+  height: auto;
   background-color: var(--grey-100);
   padding-left: 1rem;
   padding-right: 1rem;
   border-radius: 0.25rem;
   margin-bottom: 0.38rem;
+}
+.list {
+  min-height: 4.5rem;
+}
+.task:last-child {
+  margin-bottom: 0rem;
 }
 .task button, .list button {
   height: 2.875rem;
@@ -297,11 +309,13 @@ form label {
   flex-direction: column;
   gap: 0.1rem;
   flex-grow: 1;
-  word-break: break-all;
+  word-break: break-word;
   height: 100%;
+  justify-content: center;
 }
 .task-info h2 {
   font-size: 1.25rem;
+  height: auto;
   margin-top: 0.925rem;
   color: var(--black);
 }
@@ -410,14 +424,20 @@ form label {
 footer {
   display: flex;
   position: relative;
-  left: 15.2rem;
+  max-width: 37.5rem;
+  width: 100%;
+  min-height: 1.0625rem;
+  margin-bottom: 0.3rem;
 }
 footer p {
+  display: flex;
+  margin-left: auto;
   color: var(--white);
   font-weight: bold;
   font-size: 0.875rem;
   transition: all 0.2s linear;
   cursor: pointer;
+  padding-right: 0.2rem;
 }
 footer p:hover {
   transform: scale(104%);
@@ -460,4 +480,105 @@ footer p a:hover:after {
   --grey-800: var(--dark-mode-grey-100);
   --grey-800-popup: var(--dark-mode-grey-300);
   --black: var(--dark-mode-grey-50);
+
+  color-scheme: dark;
+}
+
+@media screen and (max-width: 491px) {
+  .container {
+    padding: 2rem;
+  }
+  .nav-section {
+    min-height: auto;
+  }
+}
+
+@media screen and (max-width: 454px) {
+  body {
+    justify-content: flex-start;
+  }
+
+  .container {
+    max-height: 100vh;
+    padding: 1.5rem;
+    height: 97dvh;
+    border-radius: 0;
+  }
+
+  .nav-section {
+    min-height: 118.31px;
+  }
+
+  header h1 {
+    font-size: 2.1875rem;
+  }
+  header p {
+    font-size: 1.125rem;
+  }
+
+  .navbar {
+    gap: 0.3rem;
+  }
+
+  .dropdown-menu {
+    width: 9.9748rem;
+  }
+
+  .popup-container {
+    width: 85%;
+    padding: 1.6rem;
+  }
+  .popup {
+    border-radius: 0rem;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 14.8px;
+    margin-bottom: 14.8px;
+  }
+
+  .error-message-popup {
+    border-radius: 0rem;
+  }
+}
+
+@media screen and (max-width: 392px) {
+  .nav-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .nav-icon svg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .dropdown-menu {
+    width: 8.09937rem;
+    /* height: 100%; */
+    justify-content: space-between;
+  }
+  .dropdown-menu button {
+    height: auto;
+    /* font-size: 0.875rem; */
+    font-size: 0.8rem;
+  }
+  .dropdown-menu button:first-of-type {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  .dropdown-menu button:last-of-type {
+    padding-bottom: 0.25rem;
+    /* height: 42px; */
+  }
+  .dropdown-menu button svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-right: 0.2rem;
+  }
+
+  .error-message-container {
+    width: 80%;
+  }
 }
