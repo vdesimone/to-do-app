@@ -303,6 +303,9 @@ form label {
   align-items: center;
   justify-content: center;
 }
+.check-mark-btn:hover {
+  cursor: pointer;
+}
 
 .task-info {
   display: flex;
