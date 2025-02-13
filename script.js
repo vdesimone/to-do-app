@@ -15,7 +15,6 @@ window.App = {
             const firstList = lists[0];
             localStorage.setItem("lastViewedListId", firstList.listId);
             localStorage.setItem("lastViewedListName", firstList.listName);
-            console.warn("Active list not found in the lists array. Defaulting to the first list:", firstList);
           }
         }
       }
