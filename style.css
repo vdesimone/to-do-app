@@ -75,13 +75,13 @@ body {
   justify-content: space-between;
   margin-bottom: 1.3rem;
   height: auto;
+  min-height: 7.875rem;
   width: 100%;
 }
 
 header {
   width: 48%;
   height: auto;
-  min-height: 7.395rem;
 }
 header h1 {
   font-size: 2.5rem;

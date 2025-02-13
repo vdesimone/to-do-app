@@ -113,7 +113,7 @@ window.App = {
 
       const title = document.getElementById("addListTitle").value.trim();
       const titleError = document.getElementById("addListTitleError");
-      const maxLength = 20;
+      const maxLength = 18;
 
       const formattedTitle = title
         .split(" ")
@@ -838,11 +838,18 @@ window.App = {
     },
 
     validateEditCurrentListForm: function() {
+      const lists = App.listManagement.loadData();
+
       let isValid = true;
 
       const title = document.getElementById("editListTitle").value.trim();
-      const maxLength = 20;
+      const maxLength = 18;
       const titleError = document.getElementById("editListTitleError");
+
+      const formattedTitle = title
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
 
       if (title === "") {
         titleError.textContent = "Please give your list a name";
@@ -851,6 +858,11 @@ window.App = {
       }
       else if (title.length > maxLength ) {
         titleError.textContent = `Your list name cannot exceed ${maxLength} characters`;
+        titleError.style.display = "block";
+        isValid = false;
+      }
+      else if (lists.some(list => list.listName === formattedTitle)) {
+        titleError.textContent = "You cannot have two lists with the same name";
         titleError.style.display = "block";
         isValid = false;
       }
