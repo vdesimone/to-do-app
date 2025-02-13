@@ -839,6 +839,8 @@ window.App = {
 
     validateEditCurrentListForm: function() {
       const lists = App.listManagement.loadData();
+      const listId = localStorage.getItem("lastViewedListId");
+      const currentList = lists.find(list => list.listId === parseInt(listId));
 
       let isValid = true;
 
@@ -861,7 +863,7 @@ window.App = {
         titleError.style.display = "block";
         isValid = false;
       }
-      else if (lists.some(list => list.listName === formattedTitle)) {
+      else if (lists.some(list => list.listName === formattedTitle && list.listId !== currentList.listId)) {
         titleError.textContent = "You cannot have two lists with the same name";
         titleError.style.display = "block";
         isValid = false;
